@@ -1,0 +1,12 @@
+# 🛠️ Ignorar el entorno virtual de Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 🛠️ Ignorar la base de datos local
+data/*.db
+data/__pycache__/
+
+# 🛠️ Ignorar configuraciones sensibles
+.env
