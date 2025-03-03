@@ -1,11 +1,24 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
+from datetime import date
 
-class UserCreate(BaseModel):
+# 📌 Esquema para crear un pago
+class PaymentCreate(BaseModel):
+    user_id: int
     name: str
-    email: EmailStr
+    amount: float
+    fixed: bool
+    due_date: date
 
-class UserResponse(UserCreate):
+# 📌 Esquema corregido para mostrar un pago
+class PaymentResponse(BaseModel):
     id: int
+    user_id: int
+    name: str
+    amount: float
+    fixed: bool
+    due_date: date
+    paid: bool
 
     class Config:
         from_attributes = True
+

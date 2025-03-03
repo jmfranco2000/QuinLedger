@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 from models.users import User
 from pydantic import BaseModel, EmailStr
+from routes.payments import router as payments_router
 
+# 🔹 Definir la instancia de la aplicación ANTES de incluir los routers
 app = FastAPI()
+
+# 📌 Incluir los routers después de definir `app`
+app.include_router(payments_router)
 
 # 📌 Asegurar que las tablas existen ANTES de usar la API
 Base.metadata.create_all(bind=engine)
