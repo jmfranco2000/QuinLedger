@@ -1,25 +1,19 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import SessionLocal, engine, Base
-from models.users import User
+from backend.database import SessionLocal, engine, Base  # Correcto
+from backend.models.users import User  # Correcto
 from pydantic import BaseModel, EmailStr
 from routes.payments import router as payments_router
 
-# 🔹 Definir la instancia de la aplicación ANTES de incluir los routers
 app = FastAPI()
 
-# 📌 Incluir los routers después de definir `app`
+# Incluir el router de pagos y otras rutas necesarias
 app.include_router(payments_router)
 
-# 📌 Asegurar que las tablas existen ANTES de usar la API
+# Asegurar que las tablas se creen en la base de datos
 Base.metadata.create_all(bind=engine)
 
-# 📌 Esquema de validación para usuarios
-class UserCreate(BaseModel):
-    name: str
-    email: EmailStr  # 👈 Validar que sea un email válido
-
-# 📌 Dependencia para obtener la DB
+# Dependencia para manejar la base de datos
 def get_db():
     db = SessionLocal()
     try:
@@ -27,7 +21,11 @@ def get_db():
     finally:
         db.close()
 
-# 📌 Endpoint para crear usuarios
+# Esquema para crear un nuevo usuario
+class UserCreate(BaseModel):
+    name: str
+    email: EmailStr
+
 @app.post("/api/users/")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
@@ -41,7 +39,6 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     
     return {"message": "User created successfully", "user": {"id": db_user.id, "name": db_user.name, "email": db_user.email}}
 
-# 📌 Endpoint para listar usuarios
 @app.get("/api/users/")
 def get_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
